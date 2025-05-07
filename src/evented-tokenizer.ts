@@ -379,7 +379,7 @@ export default class EventedTokenizer {
     commentStart() {
       let char = this.consume();
 
-      if (char === '-') {
+      if (char === '-' && this.peek() === '-') {
         this.transitionTo(TokenizerState.commentStartDash);
       } else if (char === '>') {
         this.delegate.finishComment();
@@ -417,7 +417,9 @@ export default class EventedTokenizer {
     commentEndDash() {
       let char = this.consume();
 
-      if (char === '-') {
+      if (char === '-' && this.peek() === '-') {
+        this.delegate.appendToCommentData(char);
+      } else if (char === '-') {
         this.transitionTo(TokenizerState.commentEnd);
       } else {
         this.delegate.appendToCommentData('-' + char);

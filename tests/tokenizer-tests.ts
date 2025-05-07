@@ -324,11 +324,48 @@ QUnit.test('A comment that immediately closes', function(assert) {
 QUnit.test('A comment that contains a -', function(assert) {
   let tokens = tokenize('<!-- A perfectly legal - appears -->');
   assert.deepEqual(tokens, [comment(' A perfectly legal - appears ')]);
+
+  tokens = tokenize('<!-- A perfectly legal - -->');
+  assert.deepEqual(tokens, [comment(' A perfectly legal - ')]);
+
+  tokens = tokenize('<!-- A perfectly legal- -->');
+  assert.deepEqual(tokens, [comment(' A perfectly legal- ')]);
 });
 
 QUnit.test('A (buggy) comment that contains two --', function(assert) {
   let tokens = tokenize('<!-- A questionable -- appears -->');
   assert.deepEqual(tokens, [comment(' A questionable -- appears ')]);
+
+  tokens = tokenize('<!-- A questionable -- -->');
+  assert.deepEqual(tokens, [comment(' A questionable -- ')]);
+
+  tokens = tokenize('<!-- A questionable-- -->');
+  assert.deepEqual(tokens, [comment(' A questionable-- ')]);
+});
+
+QUnit.test('A (buggy) comment ending with more than two --', function(assert) {
+  let tokens = tokenize('<!-- A questionable but legal comment --->');
+  assert.deepEqual(tokens, [comment(' A questionable but legal comment -')]);
+
+  tokens = tokenize('<!-- A questionable but legal comment--->');
+  assert.deepEqual(tokens, [comment(' A questionable but legal comment-')]);
+
+  tokens = tokenize('<!-- A questionable but legal comment - --->');
+  assert.deepEqual(tokens, [comment(' A questionable but legal comment - -')]);
+
+  tokens = tokenize('<!-- A questionable but legal comment -- --->');
+  assert.deepEqual(tokens, [comment(' A questionable but legal comment -- -')]);
+
+  tokens = tokenize('<!-- A questionable but legal comment ------>');
+  assert.deepEqual(tokens, [comment(' A questionable but legal comment ----')]);
+});
+
+QUnit.test('A (buggy) comment starting with more than two --', function(assert) {
+  let tokens = tokenize('<!--- Questionable but legal -->');
+  assert.deepEqual(tokens, [comment('- Questionable but legal ')]);
+
+  tokens = tokenize('<!---Questionable but legal -->');
+  assert.deepEqual(tokens, [comment('-Questionable but legal ')]);
 });
 
 QUnit.skip('Character references are expanded', function(assert) {
